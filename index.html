@@ -194,58 +194,67 @@
     </div>
 
     <script>
-        const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
-        let countdown;
+    // QRIS Statis Lu bbi
+    const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
+    let timerInterval;
 
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('package-button')) {
-                const card = e.target.closest('.package-card');
-                const name = card.querySelector('.package-title').innerText;
-                const price = card.querySelector('.package-price').innerText;
-                const amount = price.replace(/[^0-9]/g, '');
+    document.addEventListener('click', function(e) {
+        //astiin klik tombol beli
+        if (e.target.classList.contains('package-button')) {
+            const card = e.target.closest('.package-card');
+            const name = card.querySelector('.package-title').innerText;
+            const price = card.querySelector('.package-price').innerText;
+            const amount = price.replace(/[^0-9]/g, '');
 
-                const modal = document.getElementById('qris-modal');
-                const img = document.getElementById('qris-img');
-                
-                // Show Modal
-                modal.style.display = "block";
-                
-                // 1. Kasih Loading dulu bbi
-                img.src = "https://i.gifer.com/ZKZg.gif"; 
-                document.getElementById('package-info').innerHTML = `Memproses QRIS untuk ${name}...`;
+            const modal = document.getElementById('qris-modal');
+            const img = document.getElementById('qris-img');
+            const info = document.getElementById('package-info');
+            
+            // TAMPILIN MODAL DULU
+            modal.style.display = "block";
+            img.src = "https://i.gifer.com/ZKZg.gif"; // Efek loading
+            info.innerHTML = `Paket: ${name}<br>Total: <b>Rp ${parseInt(amount).toLocaleString()}</b>`;
 
-                // 2. JALUR ALTERNATIF (Pake QR Server - Gak Mungkin Mati)
-                // Kita nembak API buat dapet string QRIS dulu, baru kita tampilin jadi gambar
-                fetch(`https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Kalo dapet datanya, kita generate gambarnya pake QRServer biar stabil
-                        const qrisData = data.result && data.result.qrData ? data.result.qrData : qrisStatic;
-                        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisData)}`;
-                        
-                        document.getElementById('package-info').innerHTML = `${name} - <span style="color:#00d2ff">Rp ${parseInt(amount).toLocaleString()}</span>`;
-                    })
-                    .catch(err => {
-                        // Kalo API mati total, kita munculin QR Statis lu aja biar pembeli input manual
-                        console.log("API Modar, pake statis bbi!");
-                        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
-                        document.getElementById('package-info').innerHTML = `${name} - <span style="color:yellow">Input Nominal Manual: Rp ${parseInt(amount).toLocaleString()}</span>`;
-                    });
+            // TEMBAK API BERAK
+            const apiBerak = `https://berak.vercel.app/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}`;
+            img.src = apiBerak;
 
-                document.getElementById('wa-btn').href = `https://wa.me/6282220910994?text=Halo%20Admin%2C%20saya%20sudah%20bayar%20${encodeURIComponent(name)}`;
-                startTimer(300);
+            // --- PROTEKSI ANTI BLANK ---
+            // Kalo API Berak down, dalam 2 detik ganti ke QR standar biar pembeli gak kabur!
+            const fallback = setTimeout(() => {
+                if (!img.complete || img.naturalWidth === 0) {
+                    console.log("API Berak lagi mampet, pake QR Server!");
+                    img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
+                    info.innerHTML += `<br><span style="color:yellow; font-size:0.7rem;">*Gunakan nominal manual jika tidak otomatis</span>`;
+                }
+            }, 2000);
+
+            // SET LINK WHATSAPP
+            document.getElementById('wa-btn').href = `https://wa.me/6283171889474?text=Halo%20Admin%2C%20saya%20sudah%20bayar%20${encodeURIComponent(name)}%20seharga%20Rp${amount}`;
+            
+            startCountdown(300);
+        }
+
+        // TUTUP MODAL
+        if (e.target.id === 'close-btn' || e.target === document.getElementById('qris-modal')) {
+            document.getElementById('qris-modal').style.display = "none";
+            clearInterval(timerInterval);
+        }
+    });
+
+    function startCountdown(t) {
+        const el = document.getElementById('timer');
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            let m = Math.floor(t / 60), s = t % 60;
+            el.innerText = `Selesaikan dalam: ${m}:${s < 10 ? '0'+s : s}`;
+            if (--t < 0) {
+                clearInterval(timerInterval);
+                el.innerText = "EXPIRED!";
+                document.getElementById('qris-img').style.filter = "grayscale(1) blur(2px)";
             }
-        });
-
-        // FAKE SALES
-        setInterval(() => {
-            let p = document.createElement('div');
-            p.className = 'sales-popup';
-            p.innerHTML = `<b>User***</b> baru saja membeli paket!`;
-            document.body.appendChild(p);
-            setTimeout(() => p.classList.add('show'), 100);
-            setTimeout(() => { p.classList.remove('show'); setTimeout(() => p.remove(), 500); }, 3000);
-        }, 12000);
-    </script>
+        }, 1000);
+    }
+</script>
 </body>
 </html>
