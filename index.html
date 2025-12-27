@@ -107,13 +107,15 @@
             padding: 15px; border-radius: 15px; font-weight: 700; margin-top: 15px;
         }
 
-        /* SALES POPUP */
-        .sales-popup {
-            position: fixed; bottom: -100px; left: 20px;
-            background: var(--glass); padding: 10px 20px; border-radius: 10px;
-            border: 1px solid var(--border); transition: 0.5s; z-index: 999; font-size: 0.8rem;
-        }
+        /* FAKE SALES POPUP */
+        .sales-popup { position: fixed; bottom: -100px; left: 20px; background: var(--glass); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--border); transition: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); z-index: 999; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .sales-popup.show { bottom: 20px; }
+        .sales-icon { width: 30px; height: 30px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; }
+
+        /* LIVE VIEWERS */
+        .live-viewers { position: fixed; top: 20px; left: 20px; background: rgba(255, 0, 0, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 0, 0, 0.3); padding: 8px 15px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #fff; z-index: 1001; }
+        .live-dot { width: 8px; height: 8px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } }
     </style>
 </head>
 <body>
@@ -256,15 +258,39 @@
         }, 1000);
     }
 
-                // FAKE SALES
-        setInterval(() => {
-            let p = document.createElement('div');
-            p.className = 'sales-popup';
-            p.innerHTML = `<b>User***</b> baru saja membeli paket!`;
-            document.body.appendChild(p);
-            setTimeout(() => p.classList.add('show'), 100);
-            setTimeout(() => { p.classList.remove('show'); setTimeout(() => p.remove(), 500); }, 3000);
-        }, 12000);
+      // FAKE SALES SYSTEM (SI PENIPU BALIK!)
+        function initFakeSales() {
+            const names = ["Andi", "Siska", "Budi", "Ica", "Rian", "Dewi", "Fajar", "Putri"];
+            const pkgs = ["Paket 1", "Paket 3", "Paket 5", "Reseller VIP"];
+            
+            setInterval(() => {
+                const popup = document.createElement('div');
+                popup.className = 'sales-popup';
+                popup.innerHTML = `<div class="sales-icon"><i class="fas fa-shopping-cart"></i></div><div><b>${names[Math.floor(Math.random()*names.length)]}***</b> baru saja membeli <br><b>${pkgs[Math.floor(Math.random()*pkgs.length)]}</b></div>`;
+                document.body.appendChild(popup);
+                
+                setTimeout(() => popup.classList.add('show'), 100);
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                    setTimeout(() => popup.remove(), 500);
+                }, 4000);
+            }, 12000);
+        }
+
+        // FAKE VIEWERS
+        function initViewers() {
+            let v = Math.floor(Math.random() * 50) + 110;
+            const vd = document.createElement('div');
+            vd.className = 'live-viewers';
+            vd.innerHTML = `<div class="live-dot"></div> <span>${v} People watching</span>`;
+            document.body.appendChild(vd);
+            setInterval(() => { v += Math.floor(Math.random() * 5) - 2; vd.querySelector('span').innerText = `${v} People watching`; }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initFakeSales();
+            initViewers();
+        });
 </script>
 </body>
 </html>
