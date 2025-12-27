@@ -255,6 +255,16 @@
             }
         }, 1000);
     }
+
+                // FAKE SALES
+        setInterval(() => {
+            let p = document.createElement('div');
+            p.className = 'sales-popup';
+            p.innerHTML = `<b>User***</b> baru saja membeli paket!`;
+            document.body.appendChild(p);
+            setTimeout(() => p.classList.add('show'), 100);
+            setTimeout(() => { p.classList.remove('show'); setTimeout(() => p.remove(), 500); }, 3000);
+        }, 12000);
 </script>
 </body>
 </html>
