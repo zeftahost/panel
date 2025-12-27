@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZEFTA HOSTING | PANEL BERKUALITAS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #00d2ff;
+            --primary-purple: #9d50bb;
+            --glass: rgba(20, 20, 25, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+            --neon: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top right, #1a1a2e, #050505);
+            background-attachment: fixed;
+            color: #fff; text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 50px 20px; }
+
+        h1 { font-size: 3rem; letter-spacing: 5px; margin-bottom: 10px; }
+        .subtitle { color: #888; margin-bottom: 50px; }
+
+        /* GRID PACKAGES */
+        .pricelist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .package-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            padding: 40px 20px;
+            border-radius: 25px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .package-card:hover {
+            transform: translateY(-15px);
+            border-color: var(--primary-blue);
+            box-shadow: var(--neon);
+        }
+
+        .package-title { color: var(--primary-blue); font-size: 1.4rem; font-weight: 700; }
+        .package-price { font-size: 2.5rem; font-weight: 800; margin: 15px 0; }
+        
+        .features-list { list-style: none; margin-bottom: 30px; text-align: left; padding-left: 10px; }
+        .features-list li { margin-bottom: 10px; color: #ccc; font-size: 0.9rem; }
+        .features-list li i { color: var(--primary-blue); margin-right: 10px; }
+
+        /* FIX TOMBOL */
+        .package-button {
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .package-button:hover { background: var(--primary-blue); color: #000; }
+
+        /* RESELLER STYLE */
+        .reseller { border-color: var(--primary-purple); }
+        .reseller .package-title { color: var(--primary-purple); }
+        .reseller .package-button { border-color: var(--primary-purple); color: var(--primary-purple); }
+        .reseller .package-button:hover { background: var(--primary-purple); color: #fff; }
+
+        /* MODAL QRIS */
+        .qris-modal {
+            display: none; position: fixed; z-index: 10000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+        }
+
+        .qris-content {
+            background: #111; border: 1px solid var(--border);
+            margin: 5vh auto; padding: 30px; width: 90%; max-width: 400px;
+            border-radius: 30px; position: relative;
+            box-shadow: var(--neon);
+        }
+
+        .close-modal { position: absolute; right: 25px; top: 15px; font-size: 2rem; cursor: pointer; color: #555; }
+
+        .qr-box { background: #fff; padding: 15px; border-radius: 20px; margin: 20px 0; display: inline-block; }
+        #qris-img { width: 100%; max-width: 250px; min-height: 250px; display: block; }
+
+        .confirm-btn {
+            display: block; background: #25d366; color: #fff; text-decoration: none;
+            padding: 15px; border-radius: 15px; font-weight: 700; margin-top: 15px;
+        }
+
+        /* SALES POPUP */
+        .sales-popup {
+            position: fixed; bottom: -100px; left: 20px;
+            background: var(--glass); padding: 10px 20px; border-radius: 10px;
+            border: 1px solid var(--border); transition: 0.5s; z-index: 999; font-size: 0.8rem;
+        }
+        .sales-popup.show { bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ZEFTA HOSTING</h1>
+        <p class="subtitle">Panel Elite Tanpa Delay - Spek Dewa</p>
+        
+        <div class="pricelist-grid">
+            <div class="package-card">
+                <h3 class="package-title">PAKET 1</h3>
+                <div class="package-price">Rp3.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> RAM 1GB</li>
+                    <li><i class="fas fa-check"></i> CPU 50%</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+            <div class="package-card">
+                <h3 class="package-title">PAKET 2</h3>
+                <div class="package-price">Rp6.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> RAM 2GB</li>
+                    <li><i class="fas fa-check"></i> CPU 80%</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+            <div class="package-card">
+                <h3 class="package-title">PAKET 3</h3>
+                <div class="package-price">Rp9.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> RAM 3GB</li>
+                    <li><i class="fas fa-check"></i> CPU 100%</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+            <div class="package-card">
+                <h3 class="package-title">PAKET 4</h3>
+                <div class="package-price">Rp12.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> RAM 4GB</li>
+                    <li><i class="fas fa-check"></i> CPU 120%</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+            <div class="package-card">
+                <h3 class="package-title">PAKET 5</h3>
+                <div class="package-price">Rp15.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> RAM 5GB</li>
+                    <li><i class="fas fa-check"></i> CPU 150%</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+            <div class="package-card reseller">
+                <h3 class="package-title">RESELLER</h3>
+                <div class="package-price">Rp20.000</div>
+                <ul class="features-list">
+                    <li><i class="fas fa-star"></i> Unlimited Panel</li>
+                    <li><i class="fas fa-star"></i> Support VIP</li>
+                </ul>
+                <button class="package-button">BELI SEKARANG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="qris-modal" class="qris-modal">
+        <div class="qris-content">
+            <span class="close-modal" id="close-btn">&times;</span>
+            <h3 style="color:var(--primary-blue)">PAYMENT QRIS</h3>
+            <div class="qr-box">
+                <img src="" id="qris-img" alt="QRIS">
+            </div>
+            <p id="package-info" style="font-weight:700"></p>
+            <div id="timer" style="color:#ff4757; margin:10px 0; font-weight:700;"></div>
+            <a href="#" id="wa-btn" class="confirm-btn">KONFIRMASI WHATSAPP</a>
+        </div>
+    </div>
+
+    <script>
+        const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
+        let countdown;
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('package-button')) {
+                const card = e.target.closest('.package-card');
+                const name = card.querySelector('.package-title').innerText;
+                const price = card.querySelector('.package-price').innerText;
+                const amount = price.replace(/[^0-9]/g, '');
+
+                const modal = document.getElementById('qris-modal');
+                const img = document.getElementById('qris-img');
+                
+                // Set Data
+                document.getElementById('package-info').innerHTML = `${name} - Rp ${parseInt(amount).toLocaleString()}`;
+                document.getElementById('wa-btn').href = `https://wa.me/6282220910994?text=Sudah%20Bayar%20${name}`;
+                
+                // Show Modal & Load QR
+                modal.style.display = "block";
+                img.src = "https://i.gifer.com/ZKZg.gif"; 
+                img.src = `https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`;
+
+                startTimer(300);
+            }
+
+            if (e.target.id === 'close-btn' || e.target.id === 'qris-modal') {
+                document.getElementById('qris-modal').style.display = "none";
+                clearInterval(countdown);
+            }
+        });
+
+        function startTimer(t) {
+            const el = document.getElementById('timer');
+            clearInterval(countdown);
+            countdown = setInterval(() => {
+                let m = Math.floor(t / 60), s = t % 60;
+                el.innerText = `Expired in: ${m}:${s < 10 ? '0'+s : s}`;
+                if (--t < 0) { clearInterval(countdown); el.innerText = "EXPIRED!"; }
+            }, 1000);
+        }
+
+        // FAKE SALES
+        setInterval(() => {
+            let p = document.createElement('div');
+            p.className = 'sales-popup';
+            p.innerHTML = `<b>User***</b> baru saja membeli paket!`;
+            document.body.appendChild(p);
+            setTimeout(() => p.classList.add('show'), 100);
+            setTimeout(() => { p.classList.remove('show'); setTimeout(() => p.remove(), 500); }, 3000);
+        }, 12000);
+    </script>
+</body>
+</html>
