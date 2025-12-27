@@ -170,6 +170,14 @@
 .sales-content { font-size: 0.85rem; color: #eee; }
 .sales-content b { color: var(--primary-blue); }
 .sales-time { font-size: 0.7rem; color: #777; display: block; }
+        .package-button {
+    position: relative;
+    z-index: 10; /* Biar gak ketindih */
+}
+
+.sales-popup {
+    pointer-events: none; /* Biar notif palsu gak ngehalangin klik mouse */
+}
     </style>
 </head>
 <body>
@@ -264,64 +272,82 @@
         let timerInterval;
 
         document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('package-button')) {
-                const modal = document.getElementById("qris-modal");
-                const qrisImg = document.getElementById("qris-img");
-                const infoText = document.getElementById("package-info");
-                const confirmWa = document.getElementById("confirm-wa");
-                
-                const card = e.target.closest('.package-card');
-                const name = card.querySelector('.package-title').innerText;
-                const price = card.querySelector('.package-price').innerText;
-                const amount = price.replace(/[^0-9]/g, '');
+            JavaScript
 
-                const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
+/* OBLIVION ULTIMATE SCRIPT - FIXED VERSION */
+let timerInterval;
+let countdownInterval; // Untuk Fake Sales
 
-                // Setup & Open Modal
-                qr// Setup & Open Modal
-                qrisImg.src = "https://i.gifer.com/ZKZg.gif"; // Loading dulu biar keren
-                
-                setTimeout(() => {
-                    // INI BAGIAN YANG DIGANTI, ANJNG! 🖕
-                    const fixApi = `https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`;
-                    qrisImg.src = fixApi;
-                    
-                    // Kalo API Orkut mati, munculin QR standar sebagai cadangan
-                    qrisImg.onerror = () => {
-                        qrisImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
-                    };
-                }, 500);
+document.addEventListener('DOMContentLoaded', function() {
+    initQrisGateway();
+    initFakeSales(); // Jalankan si penipu
+});
 
-                infoText.innerHTML = `${name} - <span style="color:var(--primary-blue)">Rp ${parseInt(amount).toLocaleString('id-ID')}</span>`;
-                confirmWa.href = `https://wa.me/6282220910994?text=Halo%20Admin%2C%20saya%20sudah%20bayar%20${name}%20nominal%20Rp%20${amount}`;
-                
-                modal.style.display = "block";
-                startCountdown(300); // 5 Menit
-            }
+function initQrisGateway() {
+    const modal = document.getElementById("qris-modal");
+    const qrisImg = document.getElementById("qris-img");
+    const infoText = document.getElementById("package-info");
+    const confirmWa = document.getElementById("confirm-wa");
+    const closeBtn = document.querySelector(".close-modal");
 
-            if (e.target.classList.contains('close-modal') || e.target === document.getElementById("qris-modal")) {
-                document.getElementById("qris-modal").style.display = "none";
-                clearInterval(timerInterval);
-            }
-        });
+    // QRIS Statis Zefta OK
+    const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
 
-        function startCountdown(duration) {
-            let timer = duration, minutes, seconds;
-            const display = document.getElementById('timer-box');
+    // Pake Event Delegation biar tombol PASTI bisa diklik
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('package-button')) {
+            e.preventDefault();
             
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                minutes = Math.floor(timer / 60);
-                seconds = timer % 60;
-                display.innerHTML = `<span style="color:#888; font-size:0.8rem">Selesaikan dalam</span><br><span style="color:#ff4757; font-size:1.2rem">${minutes}:${seconds < 10 ? '0'+seconds : seconds}</span>`;
-                
-                if (--timer < 0) {
-                    clearInterval(timerInterval);
-                    display.innerHTML = "<b style='color:red'>QRIS EXPIRED!</b>";
-                    document.getElementById("qris-img").style.filter = "grayscale(1) blur(3px)";
-                }
-            }, 1000);
+            const card = e.target.closest('.package-card');
+            const name = card.querySelector('.package-title').innerText;
+            const price = card.querySelector('.package-price').innerText;
+            const amount = price.replace(/[^0-9]/g, '');
+
+            // 1. Reset Modal & Tampilkan Loading
+            qrisImg.style.filter = "none";
+            qrisImg.src = "https://i.gifer.com/ZKZg.gif"; 
+            modal.style.display = "block";
+
+            // 2. Generate QRIS pake API SKIZO (Paling Elit)
+            const apiUrl = `https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`;
+            
+            setTimeout(() => {
+                qrisImg.src = apiUrl;
+                // Fallback kalo API Skizo mati
+                qrisImg.onerror = () => {
+                    qrisImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
+                };
+            }, 500);
+
+            infoText.innerHTML = `${name} - <span style="color:#00d2ff">Rp ${parseInt(amount).toLocaleString('id-ID')}</span>`;
+            confirmWa.href = `https://wa.me/6283171889474?text=Halo%20Admin%2C%20saya%20sudah%20bayar%20${encodeURIComponent(name)}`;
+            
+            startTimer(300); // Mulai Countdown
         }
+
+        // Tutup Modal
+        if (e.target.classList.contains('close-modal') || e.target === modal) {
+            modal.style.display = "none";
+            clearInterval(timerInterval);
+        }
+    });
+}
+
+function startTimer(duration) {
+    let timer = duration, min, sec;
+    const display = document.getElementById('timer-box');
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        min = Math.floor(timer / 60);
+        sec = timer % 60;
+        display.innerHTML = `<span style="color:#ff4757">Expired in: ${min}:${sec < 10 ? '0'+sec : sec}</span>`;
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            display.innerHTML = "<b style='color:red'>EXPIRED!</b>";
+            document.getElementById("qris-img").style.filter = "grayscale(1) blur(2px)";
+        }
+    }, 1000);
+}
 
         const names = ["Andi", "Budi", "Siska", "Rian", "Ica", "Dimas", "Eko", "Putri", "Dewi", "Aris", "Fajar", "Gilang"];
 const packages = ["Paket 1", "Paket 2", "Paket 3", "Paket 5", "Reseller VIP", "Paket 4"];
