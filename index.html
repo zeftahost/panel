@@ -207,33 +207,35 @@
                 const modal = document.getElementById('qris-modal');
                 const img = document.getElementById('qris-img');
                 
-                // Set Data
-                document.getElementById('package-info').innerHTML = `${name} - Rp ${parseInt(amount).toLocaleString()}`;
-                document.getElementById('wa-btn').href = `https://wa.me/6282220910994?text=Sudah%20Bayar%20${name}`;
-                
-                // Show Modal & Load QR
+                // Show Modal
                 modal.style.display = "block";
+                
+                // 1. Kasih Loading dulu bbi
                 img.src = "https://i.gifer.com/ZKZg.gif"; 
-                img.src = `https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`;
+                document.getElementById('package-info').innerHTML = `Memproses QRIS untuk ${name}...`;
 
+                // 2. JALUR ALTERNATIF (Pake QR Server - Gak Mungkin Mati)
+                // Kita nembak API buat dapet string QRIS dulu, baru kita tampilin jadi gambar
+                fetch(`https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Kalo dapet datanya, kita generate gambarnya pake QRServer biar stabil
+                        const qrisData = data.result && data.result.qrData ? data.result.qrData : qrisStatic;
+                        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisData)}`;
+                        
+                        document.getElementById('package-info').innerHTML = `${name} - <span style="color:#00d2ff">Rp ${parseInt(amount).toLocaleString()}</span>`;
+                    })
+                    .catch(err => {
+                        // Kalo API mati total, kita munculin QR Statis lu aja biar pembeli input manual
+                        console.log("API Modar, pake statis bbi!");
+                        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
+                        document.getElementById('package-info').innerHTML = `${name} - <span style="color:yellow">Input Nominal Manual: Rp ${parseInt(amount).toLocaleString()}</span>`;
+                    });
+
+                document.getElementById('wa-btn').href = `https://wa.me/6282220910994?text=Halo%20Admin%2C%20saya%20sudah%20bayar%20${encodeURIComponent(name)}`;
                 startTimer(300);
             }
-
-            if (e.target.id === 'close-btn' || e.target.id === 'qris-modal') {
-                document.getElementById('qris-modal').style.display = "none";
-                clearInterval(countdown);
-            }
         });
-
-        function startTimer(t) {
-            const el = document.getElementById('timer');
-            clearInterval(countdown);
-            countdown = setInterval(() => {
-                let m = Math.floor(t / 60), s = t % 60;
-                el.innerText = `Expired in: ${m}:${s < 10 ? '0'+s : s}`;
-                if (--t < 0) { clearInterval(countdown); el.innerText = "EXPIRED!"; }
-            }, 1000);
-        }
 
         // FAKE SALES
         setInterval(() => {
