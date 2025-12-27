@@ -278,9 +278,18 @@
                 const qrisStatic = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214240332635093530303UMI51440014ID.CO.QRIS.WWW0215ID20253846823030303UMI5204481253033605802ID5915ZEFTA OK23252466008WONOGIRI61055761162070703A0163048BE4";
 
                 // Setup & Open Modal
-                qrisImg.src = "https://i.gifer.com/ZKZg.gif"; // Loading state
+                qr// Setup & Open Modal
+                qrisImg.src = "https://i.gifer.com/ZKZg.gif"; // Loading dulu biar keren
+                
                 setTimeout(() => {
-                    qrisImg.src = `https://berak.vercel.app/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}`;
+                    // INI BAGIAN YANG DIGANTI, ANJNG! 🖕
+                    const fixApi = `https://api.skizo.tech/api/orkut/create?amount=${amount}&codeqr=${encodeURIComponent(qrisStatic)}&apikey=GueFree`;
+                    qrisImg.src = fixApi;
+                    
+                    // Kalo API Orkut mati, munculin QR standar sebagai cadangan
+                    qrisImg.onerror = () => {
+                        qrisImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrisStatic)}`;
+                    };
                 }, 500);
 
                 infoText.innerHTML = `${name} - <span style="color:var(--primary-blue)">Rp ${parseInt(amount).toLocaleString('id-ID')}</span>`;
